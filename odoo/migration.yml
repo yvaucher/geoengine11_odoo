@@ -1,0 +1,72 @@
+migration:
+  options:
+    install_command: odoo
+    ## PLATFORM
+    # install_args: --load=web,web_kanban,session_redis,attachment_s3,logging_json      # Exoscale
+    # install_args: --load=web,web_kanban,session_redis,attachment_swift,logging_json   # OVH
+  versions:
+    - version: 11.0.0
+      operations:
+        pre:
+          - anthem songs.install.pre::main
+        post:
+          ## PLATFORM
+          ## Choose between the two options : ovh or exoscale
+          #- anthem openerp.addons.cloud_platform.songs::install_exoscale
+          #- anthem openerp.addons.cloud_platform.songs::install_ovh
+          - anthem songs.install.accounting::main
+          - anthem songs.install.logistics::main
+          - anthem songs.install.data_all::main
+      modes:
+        full:
+          operations:
+            post:
+              - anthem songs.install.data_full::main
+              #### import heavy stuff
+              #- importer.sh songs.install.inventory::setup_locations /odoo/data/install/stock.location.csv
+              #- anthem songs.install.inventory::location_compute_parents
+        # Uncomment the "migration" mode for migration projects
+        # migration:
+        #   operations:
+        #     pre:
+        #     - psql -f odoo/songs/migration/pre.sql
+        #     - anthem songs.migration.pre::pre
+        #     - anthem songs.migration.pre_check_fields::pre
+        #     post:
+        #     - anthem songs.migration.post::post
+        #     - anthem songs.migration.post_check_fields::post
+        sample:
+          operations:
+            post:
+              - anthem songs.sample.data_sample::main
+      addons:
+        upgrade:
+          ## PLATFORM
+          #- cloud_platform_exoscale or cloud_platform_ovh
+          ## Only if v9.0 and using attachment_s3 (exoscale) and `delivery_carrier_label`:
+          #- delivery_carrier_label_s3
+          # ---
+          #### oca/server-tools
+          - base_technical_features
+          # - database_cleanup  # Used for project migrations
+          - server_environment
+          - server_environment_ir_config_parameter
+          #### oca/web
+          - web_environment_ribbon
+          #### core
+          - base
+          # - sale_stock
+          # - purchase
+          #### camptocamp/odoo-dj
+          - base_dj
+          #### local-src
+          # - my_addon
+    # update step example
+    # - version: 10.x.x
+    #   addons:
+    #     upgrade:
+    #       - foo_module
+    #       - baz_module
+    #   operations:
+    #     post:
+    #       - anthem songs.updates.update_10_x_x::main
