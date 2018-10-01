@@ -61,10 +61,25 @@ RUN cd /odoo && pip install -r src_requirements.txt
 ## PLATFORM: Add this line to ADDONS_PATH if hosting is on cloud platform
 # /odoo/external-src/odoo-cloud-platform, \
 
+COPY ./req_geo.txt /odoo/
+
+# Install additional debian and python packages if needed
+RUN set -x; \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+        python-shapely \
+        && cd /odoo \
+        && pip install -r req_geo.txt \
+        # cleaning of dev packages
+        && apt-get remove -y build-essential python-dev \
+        && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
+
 ## Environment
 # frequency: sometimes
 # cost:      very light
-ENV ADDONS_PATH="/odoo/external-src/enterprise, \
+ENV ADDONS_PATH=" \
   /odoo/external-src/server-tools, \
   /odoo/external-src/geospatial, \
   /odoo/external-src/web, \
