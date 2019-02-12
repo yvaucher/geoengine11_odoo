@@ -40,7 +40,7 @@ services:
 
 
   nginx:
-    image: camptocamp/odoo-nginx:10.0-1.1.0
+    image: camptocamp/odoo-nginx:10.0-1.4.0
     network_mode: "container:odoo"
     environment:
       - NGX_ODOO_HOST=127.0.0.1
