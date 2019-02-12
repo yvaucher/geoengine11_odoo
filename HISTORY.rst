@@ -25,4 +25,8 @@ latest (unreleased)
 
 **Build**
 
+* BSMNT-153: Fetch odoo-project from ghcr.io
+
+* BSMNT-153: Upgrade odoo-project to 4.2.0
+
 **Documentation**
